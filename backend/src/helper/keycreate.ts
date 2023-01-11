@@ -1,8 +1,8 @@
 import * as fs from 'fs'
 
-export default function keyCreate(domain: string, account: string) {
+export default function keyCreate(domain: string, id: string) {
 
-  if(!(domain && account)) {
+  if(!(domain && id)) {
     throw new Error('入力された内容が不正です')
   }
 
@@ -22,17 +22,17 @@ export default function keyCreate(domain: string, account: string) {
     private_key = private_key + priv[i].toString(16).padStart(2, '0')
   }
 
-  fs.writeFile(KEY_DIR + account + '@' + domain + '.pub', public_key , function (err:any) {
+  fs.writeFile(KEY_DIR + id + '@' + domain + '.pub', public_key , function (err:any) {
     if (err) { console.log(err)
       throw err }
   })
-  fs.writeFile(KEY_DIR + account + '@' + domain + '.priv', private_key , function (err:any) {
+  fs.writeFile(KEY_DIR + id + '@' + domain + '.priv', private_key , function (err:any) {
     if (err) { console.log(err)
       throw err }
   })
 
   return {
-    account: account,
+    id: id,
     domain: domain,
     pub: public_key,
     priv: private_key
