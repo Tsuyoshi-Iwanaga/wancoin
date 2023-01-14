@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ['latin'] })
 export default function Home() {
 
   useEffect(() => {
-    axios.get('http://ec2-43-206-233-247.ap-northeast-1.compute.amazonaws.com/user/?account=admin@tci')
+    axios.get('https://api-wancoin.i244.net/user/?account=admin@tci')
     .then(result => {
       console.log(result.data)
     })
