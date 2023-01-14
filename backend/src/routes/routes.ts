@@ -11,5 +11,6 @@ router.post('/user/set_detail', userController.setUserDetail)
 // router.post('/coin/add', coinController.addCoin)
 router.post('/coin/transfer', coinController.transferCoin)
 router.get('/tx', txController.getTx)
+router.get('/test', (req, res) => res.status(200).json({data: 'test'}))
 
 export default router
