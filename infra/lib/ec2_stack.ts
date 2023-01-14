@@ -1,8 +1,12 @@
-import { Stack, StackProps, CfnOutput } from 'aws-cdk-lib';
+import { Stack, StackProps, CfnOutput, SecretValue } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import { App, GitHubSourceCodeProvider, RedirectStatus } from '@aws-cdk/aws-amplify-alpha';
+
+require('dotenv').config()
+const token = process.env.REPOSITORYTOKEN || ''
 
 export class Ec2CdkStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -70,6 +74,37 @@ export class Ec2CdkStack extends Stack {
     //Output
     new CfnOutput(this, "wancoin-instance-ip", {
       value: ec2Instance.instancePublicIp
+    })
+
+    //Amplify
+    const amplifyApp = new App(this, 'wancoin-amplify-app', {
+      appName: 'wancoin-amplify-app',
+      sourceCodeProvider: new GitHubSourceCodeProvider({
+        owner: 'Tsuyoshi-Iwanaga',
+        repository: 'wancoin',
+        oauthToken: SecretValue.unsafePlainText(token)
+      }),
+      customRules: [
+        {
+          source: '/<*>',
+          target: ' /index.html',
+          status: RedirectStatus.NOT_FOUND_REWRITE,
+        },
+      ],
+      environmentVariables: {
+        AMPLIFY_MONOREPO_APP_ROOT: 'frontend',
+        AMPLIFY_DIFF_DEPLOY: 'false'
+      },
+      autoBranchDeletion: true
+    })
+
+    //addBranch
+    amplifyApp.addBranch('main', {
+      stage: 'PRODUCTION'
+    })
+
+    new CfnOutput(this, 'appIp', {
+      value: amplifyApp.appId
     })
   }
 }
