@@ -27,19 +27,19 @@ const commandService = new CommandService_v1Client(
 )
 
 //コマンド実行後に完了したブロックを収集
-queries.fetchCommits({
-    privateKey: adminPriv,
-    creatorAccountId: adminId,
-    queryService,
-    timeoutLimit: 4000
-  },
-  (block) => {
-    console.log('fetchCommits new block:', util.inspect(block, false, null))
-  },
-  (error) => {
-    throw new Error(`fetchCommits failed : ${error.stack}`)
-  }
-)
+// queries.fetchCommits({
+//     privateKey: adminPriv,
+//     creatorAccountId: adminId,
+//     queryService,
+//     timeoutLimit: 4000
+//   },
+//   (block) => {
+//     console.log('fetchCommits new block:', util.inspect(block, false, null))
+//   },
+//   (error) => {
+//     throw new Error(`fetchCommits failed : ${error.stack}`)
+//   }
+// )
 
 const coinController = {
   //STATELESS_VALIDATION_FAILEDのエラーが発生するため調査中

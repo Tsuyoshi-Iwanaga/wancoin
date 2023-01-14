@@ -7,7 +7,9 @@ const router = express.Router()
 
 router.get('/user', userController.getUser)
 router.post('/user', userController.createUser)
-router.post('/coin/add', coinController.addCoin)
+router.post('/user/set_detail', userController.setUserDetail)
+router.post('/user/init_amount', userController.initUserAmount)
+// router.post('/coin/add', coinController.addCoin)
 router.post('/coin/transfer', coinController.transferCoin)
 router.get('/tx', txController.getTx)
 

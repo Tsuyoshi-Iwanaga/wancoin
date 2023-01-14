@@ -1,4 +1,4 @@
-import express from 'express'
+import express, { Errback } from 'express'
 import grpc from 'grpc'
 import {
   QueryService_v1Client,
@@ -7,6 +7,7 @@ import {
 import commands from 'iroha-helpers/lib/commands'
 import queries from 'iroha-helpers/lib/queries'
 import keyCreate from '../helper/keycreate'
+import * as fs from 'fs'
 
 const util = require('util')
 
@@ -26,19 +27,19 @@ const commandService = new CommandService_v1Client(
   grpc.credentials.createInsecure()
 )
 //コマンド実行後に完了したブロックを収集
-queries.fetchCommits({
-    privateKey: adminPriv,
-    creatorAccountId: adminId,
-    queryService,
-    timeoutLimit: 4000
-  },
-  (block) => {
-    console.log('fetchCommits new block:', util.inspect(block, false, null))
-  },
-  (error) => {
-    throw new Error(`fetchCommits failed : ${error.stack}`)
-  }
-)
+// queries.fetchCommits({
+//     privateKey: adminPriv,
+//     creatorAccountId: adminId,
+//     queryService,
+//     timeoutLimit: 4000
+//   },
+//   (block) => {
+//     console.log('fetchCommits new block:', util.inspect(block, false, null))
+//   },
+//   (error) => {
+//     throw new Error(`fetchCommits failed : ${error.stack}`)
+//   }
+// )
 
 const userController = {
   //ユーザ情報を得る
@@ -99,10 +100,10 @@ const userController = {
           accountName: id ,
           domainId: domain,
           publicKey: pub
-        })
+        }),
       ])
       .then(data => {
-        res.status(200).json(Object.assign(data, { id, domain, pub, priv }))
+        res.status(200).json(data)
       })
       .catch(err => {
         res.status(400).json(err.message)
@@ -110,12 +111,54 @@ const userController = {
       .finally(() => {
         process.exit(0)
       })
-
     } catch (err) {
       res.status(400).json({
         message: err ? err : 'Express Error!!'
       })
     }
-  }
+  },
+  //ユーザ情報を設定する
+  setUserDetail: (req: express.Request, res: express.Response) => {
+    try {
+      if(!(req.body.account && req.body.key && req.body.value )) {
+        throw new Error('パラメータ指定に誤りがあります')
+      }
+      const account = req.body.account
+      const key = req.body.key
+      const value = req.body.value
+
+      const priv_key = fs.readFileSync(
+        `./keys/${account}.priv`,
+        'utf-8'
+      )
+      
+      Promise.all([
+        commands.setAccountDetail({
+          privateKeys: [priv_key],
+          creatorAccountId: account,
+          quorum: 1,
+          commandService,
+          timeoutLimit: 5000
+        }, {
+          accountId: account,
+          key: key,
+          value: value,
+        })
+      ])
+      .then(data => {
+        res.status(200).json(data)
+      })
+      .catch(err => {
+        res.status(400).json(err.message)
+      })
+      .finally(() => {
+        process.exit(0)
+      })
+    } catch (err) {
+      res.status(400).json({
+        message: err ? err : 'Express Error!!'
+      })
+    }
+  },
 }
 export default userController

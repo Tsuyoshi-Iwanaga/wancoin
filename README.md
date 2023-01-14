@@ -44,3 +44,10 @@ http://localhost:3000/coin/transfer
 ```
 curl -X GET 'http://localhost:3000/tx?account=admin@test'
 ```
+
+ユーザ情報追加
+```
+curl -X POST -H "Content-Type: application/json" \
+-d '{"account": "test01@tci", "key": "key", "value": "value"}' \
+http://localhost:3000/user/set_detail
+```
