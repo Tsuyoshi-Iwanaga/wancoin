@@ -19,7 +19,5 @@ const server = https.createServer({
   cert: fs.readFileSync(path_cert)
 }, app)
 
-server.listen(port, () => {
-  process.setuid && process.setuid('node')
-})
+server.listen(port)
 console.log('express start... : ' + port)
