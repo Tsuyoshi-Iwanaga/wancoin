@@ -33,19 +33,15 @@ export class Ec2CdkStack extends Stack {
       assumedBy: new iam.ServicePrincipal("ec2.amazonaws.com"),
       managedPolicies: [
         iam.ManagedPolicy.fromManagedPolicyArn(this, "AmazonEC2ContainerServiceforEC2Role", "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"),
-        /** Add managed policy to use SSM */
+        //Add managed policy to use SSM
         iam.ManagedPolicy.fromManagedPolicyArn(this, "AmazonEC2RoleforSSM", "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM")
       ]
     })
 
     //AMI
-    const ami = new ec2.AmazonLinuxImage({
-      generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2022,
-    })
-
-    const launchTemplate = new ec2.LaunchTemplate(this, "wancoin-launch-template", {
-      spotOptions: {}
-    })
+    // const ami = new ec2.AmazonLinuxImage({
+    //   generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2022,
+    // })
 
     //EC2
     const ec2Instance = new ec2.Instance(this, 'wancoin-instance', {
@@ -60,6 +56,10 @@ export class Ec2CdkStack extends Stack {
       }),
       securityGroup: sg,
       role
+    })
+
+    const launchTemplate = new ec2.LaunchTemplate(this, "wancoin-launch-template", {
+      spotOptions: {}
     })
 
     ec2Instance.instance.launchTemplate = {
