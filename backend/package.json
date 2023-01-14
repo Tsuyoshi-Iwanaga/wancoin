@@ -8,8 +8,7 @@
     "clean": "rimraf dist",
     "tsc": "tsc",
     "build": "npm-run-all clean tsc",
-    "start": "npx pm2 start ./pm2.config.json --env development",
-    "start:prod": "npx pm2 start ./pm2.config.json --env production",
+    "start": "npx pm2 start .",
     "stop": "npx pm2 stop .",
     "restart": "npx pm2 restart ."
   },
