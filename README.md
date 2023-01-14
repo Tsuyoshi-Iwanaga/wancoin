@@ -22,20 +22,20 @@ curl -X GET 'http://localhost:3000/user?account=admin@test'
 ユーザ作成
 ```
 curl -X POST -H "Content-Type: application/json" \
--d '{"id": "0000001", "domain": "tci"}' \
+-d '{"id": "test01", "domain": "tci"}' \
 http://localhost:3000/user
 ```
 
 アセット追加
 ```
 curl -X POST -H "Content-Type: application/json" \
--d '{"account": "kanri@tci", "amount": "100"}' \
+-d '{"account": "admin@tci", "amount": "100"}' \
 http://localhost:3000/coin/add
 ```
 
 アセット転送
 ```
 curl -X POST -H "Content-Type: application/json" \
--d '{"account_from": "0000001@tci", "account_to": "0000002@tci", "amount": "1", "message": "test"}' \
+-d '{"account_from": "test01@tci", "account_to": "test02@tci", "amount": "1", "message": "test"}' \
 http://localhost:3000/coin/transfer
 ```
