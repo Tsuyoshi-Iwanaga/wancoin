@@ -6,14 +6,6 @@ import axios from 'axios'
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
-
-  useEffect(() => {
-    axios.get('https://api-wancoin.i244.net/user/?account=admin@tci')
-    .then(result => {
-      console.log(result.data)
-    })
-  }, [])
-
   return (
     <>
       <Head>
