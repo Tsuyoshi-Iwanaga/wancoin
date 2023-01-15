@@ -5,7 +5,6 @@ import txController from '../controllers/tx-controller'
 
 const router = express.Router()
 
-router.get('/', (req, res) => res.status(200).json({ check: 'ok' }))
 router.get('/user', userController.getUser)
 router.post('/user', userController.createUser)
 router.post('/user/set_detail', userController.setUserDetail)

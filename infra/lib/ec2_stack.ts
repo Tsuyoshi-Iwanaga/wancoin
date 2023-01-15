@@ -72,11 +72,11 @@ export class Ec2CdkStack extends Stack {
     }
 
     //LoadBalancer
-    const lb_sg = new ec2.SecurityGroup(this, "wancoin-lb-sg", {
-      vpc,
-      securityGroupName: 'wancoin-lb-sg',
-      allowAllOutbound: true
-    })
+    // const lb_sg = new ec2.SecurityGroup(this, "wancoin-lb-sg", {
+    //   vpc,
+    //   securityGroupName: 'wancoin-lb-sg',
+    //   allowAllOutbound: true
+    // })
 
     // const lb = new ApplicationLoadBalancer(this, 'wancoin-lb', {
     //   vpc,
@@ -95,31 +95,31 @@ export class Ec2CdkStack extends Stack {
     //   targets: []
     // })
 
-    //Amplify
-    const amplifyApp = new App(this, 'wancoin-amplify-app', {
-      appName: 'wancoin-amplify-app',
-      sourceCodeProvider: new GitHubSourceCodeProvider({
-        owner: 'Tsuyoshi-Iwanaga',
-        repository: 'wancoin',
-        oauthToken: SecretValue.unsafePlainText(token)
-      }),
-      customRules: [
-        {
-          source: '/<*>',
-          target: ' /index.html',
-          status: RedirectStatus.NOT_FOUND_REWRITE,
-        },
-      ],
-      environmentVariables: {
-        AMPLIFY_MONOREPO_APP_ROOT: 'frontend',
-        AMPLIFY_DIFF_DEPLOY: 'false'
-      },
-      autoBranchDeletion: true
-    })
+    // //Amplify
+    // const amplifyApp = new App(this, 'wancoin-amplify-app', {
+    //   appName: 'wancoin-amplify-app',
+    //   sourceCodeProvider: new GitHubSourceCodeProvider({
+    //     owner: 'Tsuyoshi-Iwanaga',
+    //     repository: 'wancoin',
+    //     oauthToken: SecretValue.unsafePlainText(token)
+    //   }),
+    //   customRules: [
+    //     {
+    //       source: '/<*>',
+    //       target: ' /index.html',
+    //       status: RedirectStatus.NOT_FOUND_REWRITE,
+    //     },
+    //   ],
+    //   environmentVariables: {
+    //     AMPLIFY_MONOREPO_APP_ROOT: 'frontend',
+    //     AMPLIFY_DIFF_DEPLOY: 'false'
+    //   },
+    //   autoBranchDeletion: true
+    // })
 
-    //addBranch
-    amplifyApp.addBranch('main', {
-      stage: 'PRODUCTION'
-    })
+    // //addBranch
+    // amplifyApp.addBranch('main', {
+    //   stage: 'PRODUCTION'
+    // })
   }
 }
