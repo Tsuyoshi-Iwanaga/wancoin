@@ -1,5 +1,10 @@
+import { styled } from '@mui/material'
 import { Html, Head, Main, NextScript } from 'next/document'
 import Header from '../src/components/header'
+
+const Body = styled('body')({
+  backgroundColor: '#f4ede6'
+})
 
 export default function Document() {
   return (
@@ -9,11 +14,11 @@ export default function Document() {
         <link rel="preconnect" href="https://fonts.gstatic.com" />
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@1,900&display=swap" rel="stylesheet" />
       </Head>
-      <body>
+      <Body>
         <Header />
         <Main />
         <NextScript />
-      </body>
+      </Body>
     </Html>
   )
 }

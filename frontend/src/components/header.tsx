@@ -1,11 +1,15 @@
 import { AppBar, Box, Container, Toolbar, Typography, styled} from "@mui/material"
 import PetsIcon from '@mui/icons-material/Pets';
 
+const HeaderOutline = styled(AppBar)({
+  backgroundColor: '#4f351b',
+  marginBottom: 30,
+})
+
 const HeaderContainer = styled(Container)({
   width: '100%',
   display: 'flex',
   justifyContent: 'center',
-  background: 'green',
 })
 
 const HeaderTitleWrap = styled(Box)({
@@ -22,7 +26,7 @@ const HeaderTitleText = styled(Typography)({
 
 const Header = () => {
   return (
-    <AppBar>
+    <HeaderOutline position="static">
       <Toolbar>
         <HeaderContainer maxWidth="md">
           <HeaderTitleWrap>
@@ -31,7 +35,7 @@ const Header = () => {
           </HeaderTitleWrap>
         </HeaderContainer>
       </Toolbar>
-    </AppBar>
+    </HeaderOutline>
   )
 }
 export default Header
