@@ -59,15 +59,12 @@ const authController = {
         if(passwordHandler.compare(password, hashedPassword)) {
           res.status(200).json({
             message: 'login success',
-            account: undefined,
-            input: password,
-            output: hashedPassword,
+            account: accountId,
+            token: hashedPassword,
           })
         } else {
           res.status(403).json({
             message: 'login failed',
-            input: password,
-            output: hashedPassword,
           })
         }
       })
