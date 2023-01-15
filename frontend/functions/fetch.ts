@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosResponse } from "axios";
+import axios, { AxiosInstance } from "axios";
 
 const axiosClient: AxiosInstance= axios.create({
   baseURL: 'http://ec2-43-206-233-247.ap-northeast-1.compute.amazonaws.com:3000',

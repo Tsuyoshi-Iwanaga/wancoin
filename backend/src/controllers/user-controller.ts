@@ -7,6 +7,7 @@ import {
 import commands from 'iroha-helpers/lib/commands'
 import queries from 'iroha-helpers/lib/queries'
 import keyCreate from '../helper/keycreate'
+import passwordHandler from '../helper/hash'
 import * as fs from 'fs'
 
 const util = require('util')
@@ -142,7 +143,8 @@ const userController = {
         }, {
           accountId: account,
           key: key,
-          value: value,
+          //passwordだけハッシュ化して保持する
+          value: key === 'password' ? passwordHandler.hash(value) : value,
         })
       ])
       .then(data => {
