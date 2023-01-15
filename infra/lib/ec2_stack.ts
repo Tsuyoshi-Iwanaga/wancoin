@@ -1,4 +1,4 @@
-import { Stack, StackProps, CfnOutput, SecretValue } from 'aws-cdk-lib';
+import { Stack, StackProps, SecretValue } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
@@ -71,10 +71,29 @@ export class Ec2CdkStack extends Stack {
       launchTemplateId: launchTemplate.launchTemplateId
     }
 
-    //Output
-    new CfnOutput(this, "wancoin-instance-ip", {
-      value: ec2Instance.instancePublicIp
+    //LoadBalancer
+    const lb_sg = new ec2.SecurityGroup(this, "wancoin-lb-sg", {
+      vpc,
+      securityGroupName: 'wancoin-lb-sg',
+      allowAllOutbound: true
     })
+
+    // const lb = new ApplicationLoadBalancer(this, 'wancoin-lb', {
+    //   vpc,
+    //   internetFacing: true,
+    //   http2Enabled: true,
+    //   securityGroup: lb_sg,
+    // });
+
+    // const lb_listener = lb.addListener('wancoin-lb-listener', {
+    //   port: 80,
+    //   open: false,
+    // })
+
+    // lb_listener.addTargets('wancoin-lb-targets', {
+    //   port: 3000,
+    //   targets: []
+    // })
 
     //Amplify
     const amplifyApp = new App(this, 'wancoin-amplify-app', {
@@ -101,10 +120,6 @@ export class Ec2CdkStack extends Stack {
     //addBranch
     amplifyApp.addBranch('main', {
       stage: 'PRODUCTION'
-    })
-
-    new CfnOutput(this, 'appIp', {
-      value: amplifyApp.appId
     })
   }
 }
