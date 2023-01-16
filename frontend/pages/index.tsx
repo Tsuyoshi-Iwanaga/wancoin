@@ -1,4 +1,5 @@
 import Head from 'next/head'
+import { useRouter } from 'next/router'
 import { Inter } from '@next/font/google'
 import { Container, Paper, Typography, styled, TextField, FormControl, InputLabel, Select, MenuItem } from '@mui/material'
 import axiosClient from '../functions/fetch'
@@ -21,7 +22,21 @@ const Title = styled('h1')({
 })
 
 export default function Home() {
-  const user = '999084@tci'
+  
+  let cookieAccountBlock
+  let  cookieAccountValue
+  const router = useRouter()
+
+  if (typeof document !== 'undefined') {
+    cookieAccountBlock = document.cookie.split('; ').find(i => i.startsWith('account'))
+    cookieAccountValue= cookieAccountBlock ? cookieAccountBlock.split('=')[1] : ''
+
+    if(cookieAccountValue === '') {
+      router.push('/login.html')
+    }
+  }
+
+  const user = cookieAccountValue || ''
 
   useEffect(() => {
     try {

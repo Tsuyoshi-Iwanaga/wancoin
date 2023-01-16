@@ -1,4 +1,5 @@
 import Head from 'next/head'
+import { useRouter } from 'next/router'
 import { Inter } from '@next/font/google'
 import axiosClient from '../functions/fetch'
 import { Box, Button, Container, Paper, TextField, styled, Backdrop, CircularProgress, Typography } from '@mui/material'
@@ -67,6 +68,7 @@ export default function Home() {
   const [status, setStatus] = useState('')
   const [id, setId] = useState('')
   const [password, setPassword] = useState('')
+  const router = useRouter()
 
   const login = () => {
     try {
@@ -82,19 +84,19 @@ export default function Home() {
       })
       .then((res: AxiosResponse) => {
         console.log('---ログイン---')
-        console.log(res.data)
-        if(false) {
-          Promise.reject('ログイン処理に失敗しました')
+        console.log(res)
+        if(res.status === 200) {
+          document.cookie = `account=${res.data.account}`
+          document.cookie = `token=${res.data.token}`
+          router.push('/')
+          Promise.resolve(res.data)
         } else {
-          Promise.reject('ログインに成功しました')
+          Promise.reject('ログインに失敗しました')
         }
-      })
-      .then(() => {
-        //ログイン後の処理(ページ移動など)
       })
       .catch((err) => {
         setStatus('')
-        alert(`サーバエラーが発生しました: ${err}`)
+        alert(`ログインに失敗しました: ${err}`)
         throw err
       })
 
