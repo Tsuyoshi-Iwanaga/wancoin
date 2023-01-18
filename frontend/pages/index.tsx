@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { Inter } from '@next/font/google'
-import { Container, Paper, Typography, styled, TextField, FormControl, InputLabel, Select, MenuItem } from '@mui/material'
+import { Container, Paper, Typography, styled, TextField, MenuItem, Box, Button, Backdrop, CircularProgress } from '@mui/material'
 import axiosClient from '../functions/fetch'
 import { useEffect, useState } from 'react'
 import { AxiosResponse } from 'axios'
@@ -21,6 +21,48 @@ const Title = styled('h1')({
   textAlign: 'center'
 })
 
+const FormWrapper = styled(Box)({
+  marginTop: '60px',
+  maxWidth: '500px',
+  marginLeft: 'auto',
+  marginRight: 'auto',
+})
+
+const FormItemWrapper = styled(Box)({
+  marginBottom: 30,
+  width: '100%',
+  display: 'flex',
+  alignItems: 'center'
+})
+
+const FormTextLabel = styled('span')({
+  display: 'block',
+  minWidth: '7em'
+})
+
+const FormItem = styled(TextField)({
+  fontSize: 24
+})
+
+const ButtonWrapper = styled(Box)({
+  display: 'flex',
+  justifyContent: 'center',
+  marginTop: 60,
+})
+
+const SendCoinButton = styled(Button)({
+  backgroundColor: '#f08300',
+  color: '#fff',
+  fontWeight: 'bold',
+  borderRadius: 8,
+  fontSize: 24,
+})
+
+const ContentsModal = styled(Backdrop)({
+  color: '#fff',
+  zIndex: 2,
+})
+
 export default function Home() {
   
   let cookieAccountBlock
@@ -37,6 +79,44 @@ export default function Home() {
   }
 
   const user = cookieAccountValue || ''
+
+  const sendCoin = () => {
+    setStatus('sending')
+    try {
+      axiosClient.post(`/coin/transfer`, {
+        account_from: id,
+        account_to: sendTo + '@tci',
+        amount: sendAmount,
+        message: sendLabel + ' ' +sendMessage,
+      })
+      .then((res: AxiosResponse) => {
+        console.log('---コイン送信---')
+        console.log(res)
+        if(res.status === 200) {
+          Promise.resolve(res.data)
+        } else {
+          Promise.reject('コインの送信に失敗しました')
+        }
+      })
+      .then(() => {
+        setStatus('')
+        alert('コインの送信に成功しました')
+        setSendTo('')
+        setSendAmount('')
+        setSendLabel('')
+        setSendMessage('')
+        //↓後で修正する
+        setCoinBalance(coinBalance - Number(sendAmount))
+      })
+      .catch((err) => {
+        setStatus('')
+        alert(`コインの送信に失敗しました: ${err}`)
+        throw err
+      })
+    } catch (err) {
+      alert(`コインの送信に失敗: ${err}`)
+    }
+  }
 
   useEffect(() => {
     try {
@@ -71,11 +151,20 @@ export default function Home() {
     }
   }, [])
 
+  //ユーザ情報
   const [id, setId] = useState('')
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [coinBalance, setCoinBalance] = useState(0)
   const [transactions, setTransactions] = useState([])
+
+  //coinを送るときの情報
+  const [sendTo, setSendTo] = useState('')
+  const [sendAmount, setSendAmount] = useState('')
+  const [sendLabel, setSendLabel] = useState('')
+  const [sendMessage, setSendMessage] = useState('')
+
+  const [status, setStatus] = useState('')
 
   return (
     <>
@@ -86,6 +175,10 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
+        <ContentsModal open={!(status === '')}>
+          { status === 'sending' ? <Typography>コインを送信しています...</Typography> : undefined }
+          <CircularProgress color="inherit" />
+        </ContentsModal>
         <Container>
           <ContentWrapper>
             <Title>ようこそ、{name}さん</Title>
@@ -98,27 +191,45 @@ export default function Home() {
             <h2>やり取り履歴</h2>
             <div>
               {/* {transactions.map((tx, i) => {
-                return (<p key={i}>{i}</p>)
+                return (<p key={i}>{tx}</p>)
               })} */}
             <ul>
-              <li>テスト</li>
+              <li>テスト01</li>
               <li>テスト02</li>
               <li>テスト03</li>
             </ul>
             </div>
             <h2>コインを送る</h2>
-            <TextField id="to" label="Filled" variant="filled" />
-            <FormControl>
-              <InputLabel id="">Age</InputLabel>
-              <Select labelId="" id="" // value={age} label="Age" onChange={handleChange} >]
-              >
-                <MenuItem value="#感謝">#感謝</MenuItem>
-                <MenuItem value="#DMマフィア">#DMマフィア</MenuItem>
-                <MenuItem value="#Our Styles">#Our Styles</MenuItem>
-              </Select>
-            </FormControl>
-            <TextField id="message" label="Filled" variant="filled" />
-            <TextField id="amount" label="Filled" variant="filled" />
+            <FormWrapper>
+              <FormItemWrapper>
+                <FormTextLabel>送る相手</FormTextLabel>
+                <FormItem id="sendTo" required label="※必須" variant="filled" select defaultValue="" fullWidth value={sendTo} onChange={(ev) => { setSendTo(ev.target.value) }}>
+                  <MenuItem key={1} value="999084">島田直哉(999084)</MenuItem>
+                  <MenuItem key={2} value="999085">遠藤圭一(999085)</MenuItem>
+                </FormItem>
+              </FormItemWrapper>
+              <FormItemWrapper>
+                <FormTextLabel>送る量</FormTextLabel>
+                <FormItem id="sendAmount" required label="※必須" variant="filled" type="number" fullWidth value={sendAmount} onChange={(ev) => { setSendAmount(ev.target.value) }} />
+              </FormItemWrapper>
+              <FormItemWrapper>
+                <FormTextLabel>ラベル</FormTextLabel>
+                <FormItem id="sendLabel" label="必須" variant="filled" select defaultValue="" fullWidth value={sendLabel} onChange={(ev) => { setSendLabel(ev.target.value) }}>
+                  <MenuItem key={1} value="#感謝">#感謝</MenuItem>
+                  <MenuItem key={2} value="#DM マフィア">#DM マフィア</MenuItem>
+                  <MenuItem key={3} value="#Our Styles">#Our Styles</MenuItem>
+                </FormItem>
+              </FormItemWrapper>
+              <FormItemWrapper>
+                <FormTextLabel>メッセージ</FormTextLabel>
+                <FormItem id="sendLabel" label="任意" variant="filled" type="text" fullWidth value={sendMessage} onChange={(ev) => { setSendMessage(ev.target.value) }} />
+              </FormItemWrapper>
+            </FormWrapper>
+            <ButtonWrapper>
+              <SendCoinButton size="large" color="warning" variant="contained" onClick={sendCoin}>
+                コインを送る
+              </SendCoinButton>
+            </ButtonWrapper>
           </ContentWrapper>
         </Container>
       </main>
