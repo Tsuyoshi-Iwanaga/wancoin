@@ -80,6 +80,23 @@ export default function Home() {
 
   const user = cookieAccountValue || ''
 
+  //トランザクション項目を整形して返す
+  const getTransactionItem = (tx:any) => {
+    const data = tx.payload.reducedPayload.commandsList[0]
+    const created = tx.payload.reducedPayload.createdTime
+    
+    if(data.transferAsset) {
+      const {amount, description, destAccountId, srcAccountId} = data.transferAsset
+      return {
+       datetime: new Date(created).toLocaleString(),
+       action: `${srcAccountId}さんから${destAccountId}さんに${amount}コインが送付されました`,
+       message: description
+      }
+    } else {
+      return undefined
+    }
+  }
+
   const sendCoin = () => {
     setStatus('sending')
     try {
@@ -140,7 +157,7 @@ export default function Home() {
       axiosClient.get(`/tx?account=${user}`)
       .then((res: AxiosResponse) => {
         console.log(res.data[0])
-        setTransactions(res.data[0].transactionList)
+        setTransactions(res.data[0].transactionsList)
       })
       .catch((err) => {
         throw err
@@ -189,28 +206,34 @@ export default function Home() {
             <Typography>もらったコイン: yyy</Typography>
             <Typography>あげたコイン: xxx</Typography>
             <h2>やり取り履歴</h2>
-            <div>
-              {/* {transactions.map((tx, i) => {
-                return (<p key={i}>{tx}</p>)
-              })} */}
-            <ul>
-              <li>テスト01</li>
-              <li>テスト02</li>
-              <li>テスト03</li>
-            </ul>
-            </div>
+              {transactions ?
+                <ul>
+                  {transactions.map((tx, i) => {
+                    const data = getTransactionItem(tx)
+                    return (data ?
+                    <li>
+                      <Typography fontSize={12} sx={{fontWeight: 'bold'}}>{data.datetime} : {data.action}</Typography>
+                      <Typography fontSize={12}>{data.message}</Typography>
+                    </li>
+                    : undefined)
+                  })}
+                </ul>
+              : undefined }
             <h2>コインを送る</h2>
             <FormWrapper>
               <FormItemWrapper>
                 <FormTextLabel>送る相手</FormTextLabel>
                 <FormItem id="sendTo" required label="※必須" variant="filled" select defaultValue="" fullWidth value={sendTo} onChange={(ev) => { setSendTo(ev.target.value) }}>
-                  <MenuItem key={1} value="999084">島田直哉(999084)</MenuItem>
-                  <MenuItem key={2} value="999085">遠藤圭一(999085)</MenuItem>
+                  <MenuItem key={1} value="999081">田中直人(999081)</MenuItem>
+                  <MenuItem key={2} value="999082">佐藤浩一(999082)</MenuItem>
+                  <MenuItem key={3} value="999084">島田直哉(999084)</MenuItem>
+                  <MenuItem key={4} value="999085">遠藤圭一(999085)</MenuItem>
                 </FormItem>
               </FormItemWrapper>
               <FormItemWrapper>
                 <FormTextLabel>送る量</FormTextLabel>
-                <FormItem id="sendAmount" required label="※必須" variant="filled" type="number" fullWidth value={sendAmount} onChange={(ev) => { setSendAmount(ev.target.value) }} />
+                <FormItem id="sendAmount" required label="※必須" variant="filled" type="number" fullWidth value={sendAmount} onChange={(ev) => { setSendAmount(Number(ev.target.value) > 0 ? ev.target.value : '0')
+                  }} />
               </FormItemWrapper>
               <FormItemWrapper>
                 <FormTextLabel>ラベル</FormTextLabel>
